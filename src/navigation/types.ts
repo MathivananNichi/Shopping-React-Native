@@ -29,6 +29,8 @@ export type RootStackParamList = {
   [AppRouteName.productDetail]: { product: ProductData };
   [AppRouteName.checkout]: undefined;
   [AppRouteName.myOrders]: undefined;
+  [AppRouteName.editProfile]: undefined;
+  [AppRouteName.map]: undefined;
 };
 
 export type SplashStackParamList = {
@@ -58,7 +60,7 @@ export type SplashStackNavProp = StackNavigationProp<SplashStackParamList>;
 export type AuthStackNavProp = StackNavigationProp<AuthStackParamList>;
 
 export type LoginScreenNavProp = CompositeNavigationProp<
-  StackNavigationProp<AuthStackParamList, "Login">,
+  StackNavigationProp<AuthStackParamList>,
   StackNavigationProp<RootStackParamList>
 >;
 export type SignUpScreenNavProp = AuthStackNavProp;
@@ -90,4 +92,3 @@ export type MyOrdersScreenProps = StackScreenProps<
   RootStackParamList,
   typeof AppRouteName.myOrders
 >;
-

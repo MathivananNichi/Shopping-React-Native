@@ -1,3 +1,5 @@
+import "reflect-metadata";
+import "./src/di/container";
 import { registerRootComponent } from 'expo';
 
 import App from './App';

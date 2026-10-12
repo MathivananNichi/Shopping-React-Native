@@ -11,7 +11,7 @@ import { AppTextStyles } from "../themes";
 
 interface TouchableOpacityViewProps extends TouchableOpacityProps {
   children: React.ReactNode;
-  style: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
 }
 
 export default function TouchableOpacityView({

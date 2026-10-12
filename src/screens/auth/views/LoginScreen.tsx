@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   StyleSheet,
   View,
@@ -10,7 +10,6 @@ import { Ionicons } from "@expo/vector-icons";
 
 import AppView from "../../../components/AppView";
 import AppText from "../../../components/AppText";
-import AppTextInput from "../../../components/AppTextInput";
 import AppButton from "../../../components/AppButton";
 import AppCheckBox from "../../../components/AppCheckBox";
 import TextButton from "../../../components/TextButton";
@@ -31,71 +30,35 @@ import {
 import AppColors from "../../../themes/colors";
 import { AppPadding } from "../../../themes/appPadding";
 import { FingerPrint } from "../../../assets/svg/fingerPrint";
-import { appMargin } from "../../../themes/appMargin";
 import { GoogleIcon } from "../../../assets/svg/google";
 import { AppleIcon } from "../../../assets/svg/apple";
 import TouchableOpacityView from "../../../components/AppTouchable";
 import { SignInWithCard } from "../../../components/signInCard";
-import { useNavigation } from "@react-navigation/native";
-import { AppRouteName, AppStackName } from "../../../navigation/routes";
-import { LoginScreenNavProp } from "../../../navigation/types";
 import TextWithDivider from "../../../components/TextWithDivider";
-import {
-  FieldValues,
-  InternalFieldName,
-  FieldErrors,
-  FieldName,
-  RegisterOptions,
-  UseFormRegisterReturn,
-  SubmitHandler,
-  SubmitErrorHandler,
-  ErrorOption,
-  useForm,
-} from "react-hook-form";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
 import AppTextInputController from "../../../components/AppTextInputController";
-type LoginFormData = yup.InferType<typeof loginSchema>;
-const loginSchema = yup
-  .object({
-    email: yup
-      .string()
-      .required("Email is required")
-      .email("Enter a valid email address"),
+import { useLoginViewModel } from "../viewModel/authViewModel";
 
-    password: yup
-      .string()
-      .required("Password is required")
-      .min(3, "Password must be at least 8 characters"),
-  })
-  .required();
+/**
+ * LoginScreen (Dumb View in MVVM Pattern)
+ * Strictly renders the UI and delegates all state and intents to useLoginViewModel.
+ */
 export default function LoginScreen() {
+  const {
+    control,
+    isLoading,
+    isPasswordVisible,
+    rememberMe,
+    onLogin,
+    togglePasswordVisibility,
+    setRememberMe,
+    navigateToSignUp,
+    handleForgotPassword,
+    handleBiometricLogin,
+    handleSocialLogin,
+  } = useLoginViewModel();
+
   const t = useLocalization();
   const screen = useScreenSize();
-  const navigation = useNavigation<LoginScreenNavProp>();
-
-  // Form State
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const { control, handleSubmit } = useForm<LoginFormData>({
-    resolver: yupResolver(loginSchema),
-    mode: "onChange",
-    defaultValues: {
-      email: "mathi@gmail.com",
-      password: "1234",
-    },
-  });
-
-  const togglePasswordVisibility = () => {
-    setIsPasswordVisible((prev) => !prev);
-  };
-
-  const handleLogin = (formData: LoginFormData) => {
-    navigation.replace(AppStackName.mainBottom);
-  };
 
   return (
     <AppView style={styles.container}>
@@ -177,7 +140,7 @@ export default function LoginScreen() {
             <AppCheckBox onPress={setRememberMe} initialValue={rememberMe} />
             <HorizontalSpacer gap={AppGap.gap4} />
             <AppText style={styles.rememberText}>{t.REMEMBER_ME}</AppText>
-            <TextButton onPress={() => {}} title={t.FORGOT_PASSWORD}/>
+            <TextButton onPress={handleForgotPassword} title={t.FORGOT_PASSWORD} />
           </View>
 
           <VerticalSpacer gap={AppGap.gap20} />
@@ -187,16 +150,14 @@ export default function LoginScreen() {
             style={styles.signInButton}
             title={t.SIGN_IN_TO_SHOPLY}
             isLoading={isLoading}
-            onPress={() => {
-              handleSubmit(handleLogin)();
-            }}
+            onPress={onLogin}
           />
           <VerticalSpacer gap={AppGap.gap20} />
 
           {/* Biometric Fingerprint Button */}
           <TouchableOpacityView
             style={styles.useFingerPrint}
-            onPress={() => {}}
+            onPress={handleBiometricLogin}
           >
             <View style={styles.fingerPrintContainer}>
               <FingerPrint />
@@ -211,11 +172,17 @@ export default function LoginScreen() {
 
           {/* Social Sign In Options */}
           <View style={styles.signContainer}>
-            <SignInWithCard icon={<GoogleIcon />} onPress={() => {}} />
-            <SignInWithCard icon={<AppleIcon />} onPress={() => {}} />
+            <SignInWithCard
+              icon={<GoogleIcon />}
+              onPress={() => handleSocialLogin("google")}
+            />
+            <SignInWithCard
+              icon={<AppleIcon />}
+              onPress={() => handleSocialLogin("apple")}
+            />
             <SignInWithCard
               icon={<Ionicons name="chatbox-ellipses-outline" size={20} />}
-              onPress={() => {}}
+              onPress={() => handleSocialLogin("other")}
             />
           </View>
 
@@ -223,9 +190,7 @@ export default function LoginScreen() {
           <View style={styles.dontHaveAccount}>
             <AppText>{t.DONT_HAVE_ACCOUNT} </AppText>
             <TextButton
-              onPress={() => {
-                navigation.navigate(AppRouteName.signupScreen);
-              }}
+              onPress={navigateToSignUp}
               title={t.SIGN_UP}
             />
           </View>
@@ -290,7 +255,6 @@ const styles = StyleSheet.create({
     backgroundColor: AppColors.primary,
     padding: AppPadding.padding6,
   },
-
   signContainer: {
     width: "100%",
     flexDirection: "row",

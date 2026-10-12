@@ -16,13 +16,32 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCG0NsUF2YWWOG79Lt_0GBmX_maa-6y87k"
+        }
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.anonymous.Shopping"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Allow Shopping to access your camera to take profile photos.",
+          "photosPermission": "Allow Shopping to access your photos to select a profile picture."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Shopping to use your location."
+        }
+      ]
     ]
   }
 }

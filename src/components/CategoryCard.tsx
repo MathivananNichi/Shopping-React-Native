@@ -1,12 +1,17 @@
 import { ScrollView, View, StyleSheet } from "react-native";
 import { ContainerStyle } from "../themes/containerStyle";
 import { Ionicons } from "@expo/vector-icons";
-import React, { ReactNode, useState } from "react";
+import React, { ComponentType } from "react";
+import { SvgProps } from "react-native-svg";
 import TouchableOpacityView from "./AppTouchable";
-import { CategoryProps } from "../screens/home/HomeScreen";
 import AppColors from "../themes/colors";
 import AppText from "./AppText";
 import { AppTextStyles } from "../themes";
+
+export type CategoryProps = {
+  title: string;
+  icon: ComponentType<SvgProps>;
+};
 
 interface CategoryCardProps {
   items: CategoryProps[];

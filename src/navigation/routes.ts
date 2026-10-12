@@ -5,6 +5,8 @@ export const AppRouteName = {
   productDetail: "ProductDetail",
   checkout: "Checkout",
   myOrders: "MyOrders",
+  editProfile: "EditProfile",
+  map: "Map",
 } as const;
 
 export const AppStackName = {

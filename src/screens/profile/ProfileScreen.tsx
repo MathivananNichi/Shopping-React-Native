@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import AppView from "../../components/AppView";
@@ -13,7 +14,9 @@ import AppColors from "../../themes/colors";
 import { AppPadding } from "../../themes/appPadding";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
-import { AppRouteName } from "../../navigation/routes";
+import { AppRouteName, AppStackName } from "../../navigation/routes";
+import { useLogout } from "../auth/hooks/useLogout";
+import { AppToast } from "../../components/AppToast";
 
 function SectionHeader({ title }: { title: string }) {
   return (
@@ -60,6 +63,31 @@ function MenuRow({ icon, label, badge, onPress, isLast }: MenuRowProps) {
 
 export default function ProfileScreen() {
   const navigation = useNavigation<any>();
+  const { mutate: logout, isPending: isLoggingOut } = useLogout();
+
+  const handleLogout = () => {
+    Alert.alert("Logout", "Are you sure you want to logout?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Logout",
+        style: "destructive",
+        onPress: () => {
+          logout(undefined, {
+            onSuccess: () => {
+              AppToast.show("Logged out successfully");
+              const rootNav = navigation.getParent() || navigation;
+              rootNav.replace(AppStackName.auth);
+            },
+            onError: (err) => {
+              AppToast.show(err.message || "Logged out");
+              const rootNav = navigation.getParent() || navigation;
+              rootNav.replace(AppStackName.auth);
+            },
+          });
+        },
+      },
+    ]);
+  };
   return (
     <AppView style={{ padding: 0 }}>
       {/* Header */}
@@ -91,7 +119,14 @@ export default function ProfileScreen() {
         contentContainerStyle={styles.scrollContent}
       >
         {/* User Card */}
-        <TouchableOpacity style={styles.userCard} activeOpacity={0.75}>
+        <TouchableOpacity
+          style={styles.userCard}
+          activeOpacity={0.75}
+          onPress={() => {
+            const rootNav = navigation.getParent() || navigation;
+            rootNav.navigate(AppRouteName.editProfile);
+          }}
+        >
           <View style={styles.avatarFallback}>
             <Ionicons name="person" size={30} color={AppColors.primary} />
           </View>
@@ -162,6 +197,10 @@ export default function ProfileScreen() {
               />
             }
             label="Personal Information"
+            onPress={() => {
+              const rootNav = navigation.getParent() || navigation;
+              rootNav.navigate(AppRouteName.editProfile);
+            }}
           />
           <MenuRow
             icon={
@@ -173,6 +212,10 @@ export default function ProfileScreen() {
             }
             label="Address Book"
             badge="2 Saved"
+            onPress={() => {
+              const rootNav = navigation.getParent() || navigation;
+              rootNav.navigate(AppRouteName.map);
+            }}
           />
           <MenuRow
             icon={
@@ -248,17 +291,22 @@ export default function ProfileScreen() {
         <TouchableOpacity
           style={styles.logoutBtn}
           activeOpacity={0.7}
-          onPress={() =>
-            Alert.alert("Logout", "Are you sure you want to logout?")
-          }
+          disabled={isLoggingOut}
+          onPress={handleLogout}
         >
-          <Ionicons
-            name="log-out-outline"
-            size={20}
-            color={AppColors.error}
-            style={{ transform: [{ scaleX: -1 }] }}
-          />
-          <AppText style={styles.logoutText}>Logout</AppText>
+          {isLoggingOut ? (
+            <ActivityIndicator size="small" color={AppColors.error} />
+          ) : (
+            <>
+              <Ionicons
+                name="log-out-outline"
+                size={20}
+                color={AppColors.error}
+                style={{ transform: [{ scaleX: -1 }] }}
+              />
+              <AppText style={styles.logoutText}>Logout</AppText>
+            </>
+          )}
         </TouchableOpacity>
 
         <AppText style={styles.versionText}>

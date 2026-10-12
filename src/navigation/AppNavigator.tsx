@@ -7,6 +7,8 @@ import MainBottomTabStack from "./MainAppBottomTabs";
 import ProductDetailScreen from "../screens/productDetail/ProductDetailScreen";
 import CheckoutScreen from "../screens/checkout/CheckoutScreen";
 import MyOrdersScreen from "../screens/orders/MyOrdersScreen";
+import EditProfileScreen from "../screens/profile/EditProfileScreen";
+import MapScreen from "../screens/map/MapScreen";
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -35,6 +37,16 @@ export default function AppNavigator() {
       <Stack.Screen
         name={AppRouteName.myOrders}
         component={MyOrdersScreen}
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name={AppRouteName.editProfile}
+        component={EditProfileScreen}
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name={AppRouteName.map}
+        component={MapScreen}
         options={{ headerShown: false, presentation: "card" }}
       />
     </Stack.Navigator>
